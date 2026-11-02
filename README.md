@@ -1,47 +1,46 @@
-# Amazon Scraper (catégorie Technologie)
+# 🛒 Application Console - Scraper Amazon (Architecture MVC)
 
-Projet de web scraping en Python avec Selenium, structuré en architecture MVC.
-Il récupère des produits tech d'Amazon (titre, prix, note, lien) et les exporte dans un fichier CSV.
+Application console développée en Python selon l'architecture **MVC (Modèle-Vue-Contrôleur)** permettant de récupérer les informations de produits sur Amazon (ou de basculer sur un mode de secours local), de les afficher en console, et de les stocker durablement dans une base de données SQLite.
 
-## Architecture
+---
 
-- `app/models/` : `Produit` (un produit) et `Depot` (stocke la liste des produits)
-- `app/scraper/` : `driver.py` (Chrome via Selenium), `amazon_scraper.py` (navigation), `parsing.py` (extraction des données)
-- `app/views/` : `console_view.py` (affichage console), `export_view.py` (export CSV)
-- `app/controllers/` : `scraping_controller.py` (coordonne le tout)
-- `config.py` : réglages (site, pages, délai, fichier d'export)
-- `main.py` : point d'entrée
-- `data/` : page Amazon sauvegardée
-- `exports/` : fichiers CSV générés
-- `tests/` : tests
+##  Structure du Projet
 
-## Installation
+```text
+PythonProject/
+│
+├── app/
+│   ├── controllers/
+│   │   └── main_controller.py   # Contrôleur principal (gestion des menus et du flux)
+│   ├── models/
+│   │   └── database.py          # Gestion de la base de données SQLite
+│   ├── scraper/
+│   │   └── amazon_scraper.py    # Logique de scraping web et gestion de secours local
+│   └── views/
+│       └── console_view.py      # Affichage des menus et des listes de produits en console
+│
+├── data/
+│   ├── images/                  # Dossier de stockage local des images téléchargées
+│   ├── page_secours_smartphones.html # Page HTML locale de secours
+│   └── produits.db              # Base de données SQLite
+│
+├── config.py                    # Configuration globale (chemins, headers, catégories)
+├── main.py                      # Point d'entrée de l'application
+└── README.md                    # Documentation du projet
 
-1. Installer Python et Google Chrome.
-2. Créer et activer l'environnement virtuel :
+Guide d'Intégration et d'Utilisation : Application MVC de Scraping Amazon
+1. Introduction et Objectif du Projet
+Ce projet consiste à développer une application console en Python basée sur l'architecture MVC (Modèle-Vue-Contrôleur). Son objectif principal est de collecter des données e-commerce (titres, prix, notes et images de smartphones) depuis Amazon, de gérer une tolérance aux pannes via des fichiers de secours locaux en cas de blocage, d'afficher ces informations de manière claire en console, et de les stocker durablement dans une base de données relationnelle SQLite.
 
-```
-python -m venv .venv
-.venv\Scripts\activate
-```
+2. Architecture Technique (MVC)
+L'application respecte une séparation stricte des responsabilités à travers les dossiers suivants :
 
-3. Installer les dépendances :
+app/controllers/ : Contient le contrôleur principal (main_controller.py) qui fait le lien entre les actions de l'utilisateur, le scraper et la base de données.
 
-```
-pip install -r requirements.txt
-```
+app/models/ : Contient la gestion des données (database.py), gérant la connexion SQLite, la création de la table produits et l'insertion en masse.
 
-## Utilisation
+app/scraper/ : Contient la logique de collecte (amazon_scraper.py), incluant la requête HTTP, le parsing HTML avec BeautifulSoup et le téléchargement local des images.
 
-```
-python main.py
-```
+app/views/ : Contient l'interface console (console_view.py) pour l'affichage des menus et des listes formatées.
 
-Le résultat est écrit dans `exports/produits_tech.csv` (colonnes : titre, prix, note, url).
-
-## Remarque
-
-Amazon refuse les requêtes du Chrome piloté par Selenium (page « Toutes nos excuses »).
-Le programme lit donc une copie de la page de résultats Amazon enregistrée dans `data/page_smartphone.html`
-(`SITE = "amazon_local"` dans `config.py`).
-Le mode `SITE = "amazon"` permet d'essayer le site en direct.
+config.py : Fichier centralisant les chemins absolus (BASE_DIR, DATA_DIR, IMAGES_DIR, DB_PATH), les en-têtes HTTP (HEADERS) et les catégories ciblées.
